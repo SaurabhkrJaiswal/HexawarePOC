@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: azurePoc
+
+  jpa:
+    hibernate:
+      ddl-auto: validate   # let Flyway manage schema; or use "update" in dev
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect  # SQL Server dialect
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://hexaware-sql-server.database.windows.net:1433;database=AccountsDb;
+      user=dbadmin@hexaware-sql-server;password=Admin@1991;
+      encrypt=true;trustServerCertificate=false;
+      hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    username: dbadmin@hexaware-sql-server
+    password: Admin@1991
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      pool-name: HikariPool-1
+      connection-timeout: 30000
+
+
+
+
