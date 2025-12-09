@@ -90,17 +90,13 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>3.4.2</version>
+                <version>3.5.1</version>
                 <configuration>
-                    <from>
-                        <image>mcr.microsoft.com/openjdk/jdk:17-ubuntu</image>
-                    </from>
-                    <to>
-                        <image>devestacraks.azurecr.io/${project.artifactId}:latest</image>
-                    </to>
+                   <to>
+                       <image>devestacraks.azurecr.io/${project.artifactId}:latest</image>
+                   </to>
                 </configuration>
             </plugin>
 		</plugins>
 	</build>
-
 </project>

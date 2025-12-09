@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azurepoc-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azurepoc-app
+  template:
+    metadata:
+      labels:
+        app: azurepoc-app
+    spec:
+      containers:
+        - name: azurepoc-container
+          image: devestacraks.azurecr.io/azurepoc:latest
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: azurepoc-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: azurepoc-app
+  ports:
+    - port: 80
+      targetPort: 8080
