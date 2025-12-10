@@ -92,7 +92,14 @@
                 <configuration>
 					 <from>
        					 <image>mcr.microsoft.com/openjdk/jdk:17-ubuntu</image>
+						  <platforms>
+            					<platform>
+                					<architecture>arm64</architecture>
+                					<os>linux</os>
+            					</platform>
+      					  </platforms>
     				</from>
+
                    <to>
                        <image>devestacraks.azurecr.io/${project.artifactId}:latest</image>
                    </to>
