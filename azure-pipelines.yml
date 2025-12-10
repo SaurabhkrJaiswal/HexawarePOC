@@ -1,0 +1,88 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  ACR_NAME: 'devestacraks'
+  IMAGE_NAME: 'azurepoc'
+  AKS_CLUSTER: 'devaks'
+  AKS_RG: 'devTestAcraks'
+  MAVEN_OPTS: '-Dmaven.test.skip=true'
+
+steps:
+
+# ========================
+# 1. Checkout code
+# ========================
+- task: Checkout@1
+  displayName: 'Checkout source code'
+
+# ========================
+# 2. Install JDK 17
+# ========================
+- task: UseJavaVersion@1
+  displayName: 'Set Java 17'
+  inputs:
+    versionSpec: '17'
+    jdkArchitectureOption: 'x64'
+
+# ========================
+# 3. Build + Jib push to ACR
+# ========================
+- task: Maven@4
+  displayName: 'Build & Push Image using Jib'
+  inputs:
+    mavenPomFile: 'pom.xml'
+    goals: 'compile jib:build'
+    options: >
+      -Djib.to.image=$(ACR_NAME).azurecr.io/$(IMAGE_NAME):$(Build.BuildId)
+    publishJUnitResults: false
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: 17
+    mavenOptions: '-Xmx3072m'
+
+# ========================
+# 4. Azure CLI Login to ACR + AKS
+# ========================
+- task: AzureCLI@2
+  displayName: 'Login to AKS & Set Context'
+  inputs:
+    azureSubscription: '<YOUR-SERVICE-CONNECTION>'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      # Login ACR
+      az acr login --name $(ACR_NAME)
+
+      # Get AKS credentials
+      az aks get-credentials \
+        --resource-group $(AKS_RG) \
+        --name $(AKS_CLUSTER) \
+        --overwrite-existing
+
+# ========================
+# 5. Deploy to AKS
+# ========================
+- task: Kubernetes@1
+  displayName: 'Deploy to AKS'
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscriptionEndpoint: '<YOUR-SERVICE-CONNECTION>'
+    azureResourceGroup: '$(AKS_RG)'
+    kubernetesCluster: '$(AKS_CLUSTER)'
+    namespace: 'default'
+    command: apply
+    useConfigurationFile: true
+    configuration: 'Deployment.yaml'
+    secretType: 'None'
+
+
+
+
